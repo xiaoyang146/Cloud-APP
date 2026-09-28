@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="请输入应用名称">请输入应用名称</string>
+    <string name="请输入应用描述">请输入应用描述</string>
+    <string name="payment_hint">提示：支付成功后请点击\"我已支付\"按钮</string>
+    <string name="quote_load_failed">今日一言加载失败</string>
+    <string name="quote_parse_failed">一言解析错误</string>
+    <string name="quote_network_error">网络错误，无法获取格言</string>
+</resources>

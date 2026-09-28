@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 应用选择 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvAppLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="选择应用："
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp" />
+
+        <com.cloud.dex.OptionSelector
+            android:id="@+id/spinnerApps"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="44dp"
+            android:background="@drawable/bg_option_selector"
+            android:drawableEnd="@drawable/ic_arrow_down"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/textPrimary"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <!-- 卡密类型选择 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvTypeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="卡密类型："
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp" />
+
+        <com.cloud.dex.OptionSelector
+            android:id="@+id/spinnerKamiType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="44dp"
+            android:background="@drawable/bg_option_selector"
+            android:drawableEnd="@drawable/ic_arrow_down"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/textPrimary"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <!-- 导出格式选择 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvFormatLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="导出格式："
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp" />
+
+        <com.cloud.dex.OptionSelector
+            android:id="@+id/spinnerExportFormat"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="44dp"
+            android:background="@drawable/bg_option_selector"
+            android:drawableEnd="@drawable/ic_arrow_down"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/textPrimary"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <!-- 按钮区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/btn_secondary_background"
+            android:text="取消"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/btn_primary_background"
+            android:text="确认导出"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
