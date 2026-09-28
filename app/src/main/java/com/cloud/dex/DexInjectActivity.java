@@ -902,9 +902,19 @@ public class DexInjectActivity extends AppCompatActivity {
         etVersion.setFilters(new android.text.InputFilter[] {
                 new android.text.InputFilter.LengthFilter(20),
                 (source, start, end, dest, dstart, dend) -> {
+                    // 统计已存在的点（排除将被替换的区间）
+                    int dots = 0;
+                    for (int i = 0; i < dest.length(); i++) {
+                        if (i >= dstart && i < dend) continue;
+                        if (dest.charAt(i) == '.') dots++;
+                    }
                     for (int i = start; i < end; i++) {
                         char ch = source.charAt(i);
                         if (!Character.isDigit(ch) && ch != '.') return "";
+                        if (ch == '.') {
+                            dots++;
+                            if (dots > 2) return ""; // 最多 2 个点，例如 1.0.1
+                        }
                     }
                     return null;
                 }
