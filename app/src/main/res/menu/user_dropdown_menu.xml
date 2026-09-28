@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_personal_center"
+        android:title="个人中心"
+        android:icon="@android:drawable/ic_menu_my_calendar" />
+
+    <item
+        android:id="@+id/action_edit_profile"
+        android:title="修改信息"
+        android:icon="@android:drawable/ic_menu_edit" />
+
+    <item
+        android:id="@+id/action_logout"
+        android:title="退出登录"
+        android:icon="@android:drawable/ic_lock_power_off" />
+</menu>

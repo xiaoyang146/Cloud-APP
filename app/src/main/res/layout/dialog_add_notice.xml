@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@color/bg_white">
+
+    <!-- 选择应用标题 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选择应用："
+        android:textSize="16sp"
+        android:textColor="@color/text_color_dark"
+        android:layout_marginBottom="12dp" />
+
+    <!-- 下拉选择框 - 应用自定义样式 -->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/CustomTextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:padding="0dp">
+
+        <com.cloud.dex.OptionSelector
+            android:id="@+id/spinnerApps"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/bg_option_selector"
+            android:drawableEnd="@drawable/ic_arrow_down"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="14dp"
+            android:textColor="@color/textPrimary"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 公告标题输入框 -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilNoticeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxStrokeColor="@color/border_color"
+
+        app:startIconTint="@color/icon_tint"
+        app:endIconMode="clear_text"
+        app:hintEnabled="true"
+        app:hintTextColor="@color/input_box_stroke"
+        app:boxBackgroundColor="@color/bg_input"
+        app:startIconCheckable="false"
+        app:startIconContentDescription="标题图标">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etNoticeTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:gravity="center_vertical|start"
+            android:hint="请输入公告标题"
+            android:inputType="text"
+            android:maxLines="1"
+            android:maxLength="50"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/text_color_dark"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 公告内容输入框 -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilNoticeContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxStrokeColor="@color/border_color"
+
+        app:startIconTint="@color/icon_tint"
+        app:hintEnabled="true"
+        app:hintTextColor="@color/input_box_stroke"
+        app:boxBackgroundColor="@color/bg_input"
+        app:startIconCheckable="false"
+        app:startIconContentDescription="内容图标">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etNoticeContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="120dp"
+            android:gravity="top|start"
+            android:hint="请输入公告内容"
+            android:inputType="textMultiLine"
+            android:maxLines="6"
+            android:scrollbars="vertical"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/text_color_dark"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 按钮区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/btn_secondary_background"
+            android:text="取消"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/btn_primary_background"
+            android:text="确认发布"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
