@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/menu_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="用户"
+    android:textColor="@color/black"
+    android:textSize="16sp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:gravity="center"
+    android:textAllCaps="false"
+    android:singleLine="true" />

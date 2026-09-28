@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_muted">
+
+    <!-- 今日使用人数卡片 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/card_white_rounded">
+
+        <TextView
+            android:id="@+id/tvTodayUsers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="36sp"
+            android:textColor="#2196F3"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="今日使用人数"
+            android:textSize="16sp"
+            android:textColor="@color/text_color_hint"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+
+    <!-- MPAndroidChart 折线图 -->
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="120dp"
+    android:layout_marginBottom="16dp" />
+</LinearLayout>
