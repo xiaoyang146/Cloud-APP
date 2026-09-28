@@ -1,0 +1,101 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.cloud.dex'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.cloud.dex"
+        minSdk 24
+        targetSdk 33
+        versionCode 3
+        versionName "1.0.8"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+    }
+}
+
+// ========== 构建时自动加密 xiao.dex ==========
+import java.security.MessageDigest
+import java.security.SecureRandom
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
+
+android.applicationVariants.configureEach { variant ->
+    def mergeAssets = tasks.named("merge${variant.name.capitalize()}Assets")
+    mergeAssets.configure {
+        doLast {
+            def dexFile = new File("${project.buildDir}/intermediates/assets/${variant.name}/xiao.dex")
+            if (dexFile.exists()) {
+                def passphrase = "DexInjector@2025!Secure#Payload"
+                def plaintext = dexFile.bytes
+                def key = MessageDigest.getInstance("SHA-256").digest(passphrase.getBytes("UTF-8"))
+                def iv = new byte[16]
+                new SecureRandom().nextBytes(iv)
+                def cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+                cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key, "AES"), new IvParameterSpec(iv))
+                def encrypted = cipher.doFinal(plaintext)
+                def out = new byte[16 + encrypted.length]
+                System.arraycopy(iv, 0, out, 0, 16)
+                System.arraycopy(encrypted, 0, out, 16, encrypted.length)
+                dexFile.bytes = out
+                logger.lifecycle("[DexEncrypt] xiao.dex encrypted (${plaintext.length} -> ${out.length} bytes)")
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'  // 1.9.0 与 1.8.0 重复,保留较新版本
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.android.volley:volley:1.2.1'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'  // 重复声明已合并
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.alipay.sdk:alipaysdk-android:15.8.11'
+
+    // 二维码生成和扫描
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+    implementation 'com.google.zxing:core:3.4.1'  // 重复声明已合并
+
+    // JSON解析
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    // LocalBroadcastManager
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+
+    // DEX 注入相关
+    implementation 'org.smali:dexlib2:2.5.2'
+    implementation 'org.smali:baksmali:2.5.2'
+    implementation 'org.smali:smali:2.5.2'
+    implementation 'com.google.guava:guava:31.0.1-android'
+    implementation 'xerces:xercesImpl:2.12.2'
+    implementation 'net.lingala.zip4j:zip4j:2.11.5'
+    implementation 'com.android.tools.build:apksig:8.0.0'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.77'
+}

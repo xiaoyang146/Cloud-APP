@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  刷新中转圈动画（与美团众包 drawable/waybill_progress_pull_refreshing 一致）：
+  把 ptr_icon_pull_refreshing 从 0° 旋转到 1080°，圆心取图片中心。
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <rotate
+            android:drawable="@drawable/ptr_icon_pull_refreshing"
+            android:fromDegrees="0.0"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:toDegrees="1080.0" />
+    </item>
+</layer-list>

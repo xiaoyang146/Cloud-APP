@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  下拉刷新头部（美团众包同款）。
+  根节点就是 com.cloud.dex.widget.refresh.PtrLoadingHeader（对应原版
+  com.meituan.banma.waybill.widget.list.WaybillBanmaLoadingView）。
+  PtrFrameLayout 会自动 inflate 本布局并作为头部挂载，业务不需要手动设置。
+-->
+<com.cloud.dex.widget.refresh.PtrLoadingHeader
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- 下拉箭头 -->
+        <ImageView
+            android:id="@+id/ptr_header_arrow"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="7.5dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ptr_icon_pull2refresh" />
+
+        <!-- 刷新中转圈（0° -> 1080° 旋转） -->
+        <ProgressBar
+            android:id="@+id/ptr_header_progress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="7.5dp"
+            android:indeterminateDrawable="@drawable/ptr_anim_pull_refreshing"
+            android:visibility="gone" />
+
+        <!-- 提示文字：下拉刷新 / 松手刷新 / 正在加载 -->
+        <TextView
+            android:id="@+id/ptr_header_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/ptr_tip_pull"
+            android:textColor="#FF999999"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</com.cloud.dex.widget.refresh.PtrLoadingHeader>

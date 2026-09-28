@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
+
+            <!-- 下拉列表框（复刻卡密管理界面的选择应用下拉框） -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="选择应用："
+                    android:textSize="16sp"
+                    android:textColor="@color/text_color_dark"
+                    android:gravity="center_vertical" />
+
+                <com.cloud.dex.OptionSelector
+                    android:id="@+id/spinnerApps"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:minHeight="44dp"
+                    android:background="@drawable/bg_option_selector"
+                    android:drawableEnd="@drawable/ic_arrow_down"
+                    android:drawablePadding="6dp"
+                    android:gravity="center_vertical"
+                    android:padding="8dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <!-- 更新标题 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilUpdateTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:hint="更新标题："
+                app:boxBackgroundColor="@color/bg_input"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="@color/border_color"
+                app:endIconMode="clear_text"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/input_box_stroke">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUpdateTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
+                    android:gravity="center_vertical|start"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="16dp"
+                    android:textColor="@color/text_color_dark"
+                    android:textSize="16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 更新链接 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilUpdateUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:hint="更新链接："
+                app:boxBackgroundColor="@color/bg_input"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="@color/border_color"
+                app:endIconMode="clear_text"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/input_box_stroke">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUpdateUrl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
+                    android:gravity="center_vertical|start"
+                    android:inputType="textUri"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="16dp"
+                    android:textColor="@color/text_color_dark"
+                    android:textSize="16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 版本号（新增，仅允许数字和 .） -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:hint="版本号："
+                app:boxBackgroundColor="@color/bg_input"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="@color/border_color"
+                app:endIconMode="clear_text"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/input_box_stroke">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
+                    android:gravity="center_vertical|start"
+                    android:inputType="text"
+                    android:digits="0123456789."
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="16dp"
+                    android:textColor="@color/text_color_dark"
+                    android:textSize="16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 更新内容 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilUpdateContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:hint="更新内容："
+                app:boxBackgroundColor="@color/bg_input"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="@color/border_color"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/input_box_stroke">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUpdateContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="120dp"
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine"
+                    android:maxLines="6"
+                    android:scrollbars="vertical"
+                    android:paddingStart="12dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="16dp"
+                    android:textColor="@color/text_color_dark"
+                    android:textSize="16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 开启插件更新 开关 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="开启插件更新"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_color_dark" />
+
+                <com.cloud.dex.IosLikeSwitch
+                    android:id="@+id/switchPluginUpdate"
+                    android:layout_width="50dp"
+                    android:layout_height="25dp" />
+
+            </LinearLayout>
+
+            <!-- 是否强制更新 开关 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="是否强制更新"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_color_dark" />
+
+                <com.cloud.dex.IosLikeSwitch
+                    android:id="@+id/switchForceUpdate"
+                    android:layout_width="50dp"
+                    android:layout_height="25dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

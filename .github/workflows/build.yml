@@ -1,0 +1,115 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Debug & Release APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK (pre-installed)
+        run: |
+          echo "ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=${ANDROID_HOME:-/usr/local/lib/android/sdk}" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK=${ANDROID_HOME:-/usr/local/lib/android/sdk}" >> "$GITHUB_ENV"
+
+          # Show pre-installed content
+          if [ -d "${ANDROID_SDK_ROOT}" ]; then
+            echo "Android SDK found at: ${ANDROID_SDK_ROOT}"
+            ls "${ANDROID_SDK_ROOT}/platforms/" 2>/dev/null || echo "No platforms yet"
+          else
+            echo "No pre-installed SDK, installing..."
+            mkdir -p /usr/local/lib/android/sdk
+            cd /usr/local/lib/android/sdk
+            curl -sL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
+            unzip -qo cmdline-tools.zip
+            mkdir -p cmdline-tools/latest
+            mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+          fi
+
+      - name: Install required SDK components
+        run: |
+          if [ ! -f "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" ]; then
+            echo "sdkmanager not found, downloading cmdline-tools..."
+            cd /tmp
+            curl -sL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
+            unzip -qo cmdline-tools.zip
+            mkdir -p "${ANDROID_SDK_ROOT}/cmdline-tools/latest"
+            cp -r cmdline-tools/* "${ANDROID_SDK_ROOT}/cmdline-tools/latest/"
+          fi
+          yes | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --licenses
+          "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" "platforms;android-33" "build-tools;33.0.0" "platform-tools"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Build Release APK (unsigned)
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        continue-on-error: true
+
+      - name: Upload Debug APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          if-no-files-found: warn
+          path: |
+            app/build/outputs/apk/debug/*.apk
+
+      - name: Upload Release APK artifacts
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: app-release
+          if-no-files-found: warn
+          path: |
+            app/build/outputs/apk/release/*.apk
+
+      - name: Create Downloadable Release
+        if: success() || failure()
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.7-${{ github.run_number }}
+          name: APK v1.0.7 (Build #${{ github.run_number }})
+          body: |
+            ## Cloud-APP v1.0.7
+
+            ### 变更
+            - 统一 AppConfig URL,消除硬编码
+            - 修复 URL 路径穿越
+            - Token 双写移除,统一 TokenManager
+            - SharedPreferences commit→apply
+            - 全局崩溃处理改进
+            - AndroidManifest 去重权限
+            - build.gradle 合并重复依赖
+
+            ### 注意
+            - Debug APK 可直接安装
+            - Release APK 未签名
+          files: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
