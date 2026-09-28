@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardKami"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginBottom="0dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/card_bg"
+    app:strokeColor="@color/stroke_color"
+    app:strokeWidth="0.5dp"
+    app:cardUseCompatPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 卡密代码（可点击复制） -->
+        <TextView
+            android:id="@+id/tvKamiCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="卡密："
+            android:textSize="18sp"
+            android:textColor="@color/text_color_primary"
+            android:textStyle="bold"
+            android:paddingVertical="4dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="8dp" />
+
+        <!-- 卡密类型 + 状态标签 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:id="@+id/tvKamiType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="卡密类型："
+                android:textSize="14sp"
+                android:textColor="@color/text_gray_500" />
+
+            <TextView
+                android:id="@+id/tvKamiStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="未使用"
+                android:textSize="12sp"
+                android:textColor="#00EA2F"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <!-- 到期时间 -->
+        <TextView
+            android:id="@+id/tvCreateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="到期时间："
+            android:textSize="14sp"
+            android:textColor="@color/text_gray_tertiary"
+            android:layout_marginBottom="8dp" />
+
+        <!-- 设备ID（仅使用状态时显示） -->
+        <TextView
+            android:id="@+id/tvDeviceId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="设备ID："
+            android:textSize="14sp"
+            android:textColor="#FF9800"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
