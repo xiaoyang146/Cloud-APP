@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- 1. 应用管理 (nav_app_management) -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_app_management"
+            android:icon="@drawable/ic_app_management"
+            android:title="应用管理">
+            <menu>
+                <item
+                    android:id="@+id/nav_add_app"
+                    android:icon="@drawable/ic_add_app"
+                    android:title="添加应用" />
+                <item
+                    android:id="@+id/nav_edit_app"
+                    android:icon="@drawable/ic_edit_app"
+                    android:title="编辑应用" />
+                <item
+                    android:id="@+id/nav_plugin_update"
+                    android:icon="@drawable/ic_plugin_update"
+                    android:title="插件更新" />
+                <item
+                    android:id="@+id/nav_app_list"
+                    android:icon="@drawable/ic_app_list"
+                    android:title="应用管理" />
+            </menu>
+        </item>
+    </group>
+
+    <!-- 5. 设置公告 (nav_announcement) -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_announcement"
+            android:icon="@drawable/ic_announcement"
+            android:title="设置公告">
+            <menu>
+                <item
+                    android:id="@+id/nav_add_announcement"
+                    android:icon="@drawable/ic_add_announcement"
+                    android:title="添加公告" />
+                <item
+                    android:id="@+id/nav_manage_announcement"
+                    android:icon="@drawable/ic_manage_announcement"
+                    android:title="公告管理" />
+            </menu>
+        </item>
+    </group>
+
+    <!-- 8. 卡密中心 (nap_card_center) -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nap_card_center"
+            android:icon="@drawable/ic_card_center"
+            android:title="卡密中心">
+            <menu>
+                <item
+                    android:id="@+id/nav_add_card"
+                    android:icon="@drawable/ic_add_card"
+                    android:title="添加卡密" />
+                <item
+                    android:id="@+id/nav_manage_card"
+                    android:icon="@drawable/ic_manage_card"
+                    android:title="卡密管理" />
+                <item
+                    android:id="@+id/nav_export_card"
+                    android:icon="@drawable/ic_export_card"
+                    android:title="导出卡密" />
+            </menu>
+        </item>
+    </group>
+
+    <!-- 12. 更新/会员 (nav_update_membership) -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_update_membership"
+            android:icon="@drawable/ic_update_membership"
+            android:title="更新/会员">
+            <menu>
+                <item
+                    android:id="@+id/nav_update_log"
+                    android:icon="@drawable/ic_update_log"
+                    android:title="更新日志"
+                    app:actionLayout="@layout/nav_item_update_log" />
+                <item
+                    android:id="@+id/nav_membership"
+                    android:icon="@drawable/ic_membership"
+                    android:title="开通会员" />
+            </menu>
+        </item>
+    </group>
+
+    <!-- 15. 其它功能 (nav_other_features) -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_other_features"
+            android:icon="@drawable/ic_other_features"
+            android:title="其它功能">
+            <menu>
+                <item
+                    android:id="@+id/nav_development_doc"
+                    android:icon="@drawable/ic_development_doc"
+                    android:title="开发文档" />
+                <item
+                    android:id="@+id/nav_about_cloud"
+                    android:icon="@drawable/ic_about_cloud"
+                    android:title="关于Cloud" />
+                <item
+                    android:id="@+id/nav_day_mode"
+                    android:icon="@drawable/ic_day_mode"
+                    android:title="白天模式"
+                    app:actionLayout="@layout/nav_item_day_mode" />
+            </menu>
+        </item>
+    </group>
+
+</menu>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 应用自定义颜色 - 夜间模式 -->
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#03A9F4</color>
+    <color name="grey">#9E9E9E</color>
+    <color name="icon_tint">#BBBBBB</color>
+    <color name="input_box_stroke">#1E88E5</color>
+
+    <!-- 状态颜色 -->
+    <color name="colorRed">#EF5350</color>
+    <color name="colorGreen">#66BB6A</color>
+    <color name="colorOrange">#FFA726</color>
+    <color name="colorGray">#757575</color>
+
+    <!-- 文本颜色 -->
+    <color name="textPrimary">#E0E0E0</color>
+    <color name="textSecondary">#9E9E9E</color>
+    <color name="textHint">#616161</color>
+
+    <!-- 背景颜色 -->
+    <color name="background">#121212</color>
+    <color name="cardBackground">#1E1E1E</color>
+    <color name="online_active">#66BB6A</color>
+    <color name="online_inactive">#757575</color>
+
+    <!-- 主题可切换颜色（夜间模式） -->
+    <color name="bg_white">#1E1E1E</color>
+    <color name="bg_surface">#121212</color>
+    <color name="bg_light">#1A1A1A</color>
+    <color name="bg_muted">#1A1A1A</color>
+    <color name="bg_warm">#1A1A1A</color>
+    <color name="bg_input">#2C2C2C</color>
+    <color name="card_bg">#1E1E1E</color>
+    <color name="text_color_dark">#E0E0E0</color>
+    <color name="text_color_primary">#E0E0E0</color>
+    <color name="text_color_secondary">#757575</color>
+    <color name="text_color_hint">#9E9E9E</color>
+    <color name="text_black">#FFFFFF</color>
+    <color name="text_near_black">#FFFFFF</color>
+    <color name="text_gray_secondary">#9E9E9E</color>
+    <color name="text_gray_tertiary">#9E9E9E</color>
+    <color name="icon_tint_secondary">#666666</color>
+    <color name="border_color">#666666</color>
+    <color name="divider_color">#444444</color>
+    <color name="bg_card_alt">#1E1E1E</color>
+    <color name="stroke_color">#444444</color>
+    <color name="text_gray_500">#BBBBBB</color>
+    <color name="text_gray_400">#888888</color>
+    <color name="badge_bg_color">#2C2C2C</color>
+</resources>
