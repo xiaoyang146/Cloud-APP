@@ -188,10 +188,10 @@ public class PluginUpdateActivity extends AppCompatActivity {
 
         // 应用切换时重新加载该应用的配置
         spinnerApps.setOnItemSelectedListener(position -> {
-            if (position == 0) {
-                selectedAppId = 0; // 所有应用
+            if (position >= 0 && position < appList.size()) {
+                selectedAppId = appList.get(position).getAppId();
             } else {
-                selectedAppId = appList.get(position - 1).getAppId();
+                selectedAppId = 0;
             }
             Log.d(TAG, "已选择应用: " + selectedAppId);
             // 切换应用时加载对应配置
@@ -462,7 +462,7 @@ public class PluginUpdateActivity extends AppCompatActivity {
         requestQueue.add(appsRequest);
     }
 
-    /** 构建下拉列表显示项：第一项为「所有应用」 */
+    /** 构建下拉列表显示项：仅显示应用（不含「所有应用」），默认选中最新（appid 最大）的应用 */
     private void setupAppsSpinner(JSONArray appsArray) {
         try {
             appList.clear();
@@ -474,17 +474,32 @@ public class PluginUpdateActivity extends AppCompatActivity {
                         appObject.getString("app_desc")));
             }
 
+            if (appList.isEmpty()) {
+                spinnerApps.setSheetTitle("选择应用");
+                spinnerApps.setPlaceholderText("暂无可用应用");
+                selectedAppId = 0;
+                return;
+            }
+
             List<String> spinnerItems = new ArrayList<>();
-            spinnerItems.add("所有应用");
             for (AppItem app : appList) {
                 spinnerItems.add(app.getAppName() + " - (" + app.getAppId() + ")");
             }
 
             spinnerApps.setSheetTitle("选择应用");
             spinnerApps.setOptionList(spinnerItems);
-            // 默认选中第一个（所有应用），加载配置
-            selectedAppId = 0;
-            loadPluginUpdateConfig();
+
+            // 默认选中 appid 最大的应用（数字最大 = 最新）
+            int latestIndex = 0;
+            int maxAppId = appList.get(0).getAppId();
+            for (int i = 1; i < appList.size(); i++) {
+                if (appList.get(i).getAppId() > maxAppId) {
+                    maxAppId = appList.get(i).getAppId();
+                    latestIndex = i;
+                }
+            }
+            // setSelection 会触发 OnItemSelectedListener，从而设置 selectedAppId 并加载配置
+            spinnerApps.setSelection(latestIndex);
         } catch (JSONException e) {
             Log.e(TAG, "设置应用下拉框失败", e);
             showToast("设置应用列表失败");
