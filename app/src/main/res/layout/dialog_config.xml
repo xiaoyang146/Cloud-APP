@@ -97,6 +97,41 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
+        <!-- 版本号输入 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="版本号"
+                android:textColor="@color/text_color_dark"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_version_dialog"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/edit_text_background"
+                android:hint="请输入版本号（仅数字和 .）"
+                android:inputType="numberDecimal"
+                android:padding="12dp"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="只能输入数字和英文句点（.），例如 1.0.0"
+                android:textColor="@color/text_color_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
         <!-- 标题1输入 -->
         <LinearLayout
             android:layout_width="match_parent"

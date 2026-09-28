@@ -129,7 +129,7 @@ public class DexInjectActivity extends AppCompatActivity {
     private Uri selectedApkUri;
     private List<String> activityList = new ArrayList<>();
     private String selectedActivity;
-    private String selectedAppId, selectedContact, selectedCardUrl;
+    private String selectedAppId, selectedContact, selectedCardUrl, selectedVersion;
     private String configTitle1, configTitle2, configTitle3, configTitle4;
     private String knownMainActivity;
     private String pendingInstallApkPath;
@@ -883,6 +883,7 @@ public class DexInjectActivity extends AppCompatActivity {
 
         EditText etContact = dialogView.findViewById(R.id.et_contact_dialog);
         EditText etCardUrl = dialogView.findViewById(R.id.et_card_url_dialog);
+        EditText etVersion = dialogView.findViewById(R.id.et_version_dialog);
         EditText etTitle1 = dialogView.findViewById(R.id.et_title_1);
         EditText etTitle2 = dialogView.findViewById(R.id.et_title_2);
         EditText etTitle3 = dialogView.findViewById(R.id.et_title_3);
@@ -898,10 +899,22 @@ public class DexInjectActivity extends AppCompatActivity {
                 }
         });
 
+        etVersion.setFilters(new android.text.InputFilter[] {
+                new android.text.InputFilter.LengthFilter(20),
+                (source, start, end, dest, dstart, dend) -> {
+                    for (int i = start; i < end; i++) {
+                        char ch = source.charAt(i);
+                        if (!Character.isDigit(ch) && ch != '.') return "";
+                    }
+                    return null;
+                }
+        });
+
         btnCancel.setOnClickListener(v -> dialog.dismiss());
         btnConfirm.setOnClickListener(v -> {
             String contact = etContact.getText().toString().trim();
             String cardUrl = etCardUrl.getText().toString().trim();
+            String version = etVersion.getText().toString().trim();
 
             if (contact.length() < 5 || contact.length() > 12) {
                 etContact.setError("请输入5-12位数字");
@@ -911,10 +924,15 @@ public class DexInjectActivity extends AppCompatActivity {
                 etCardUrl.setError("请输入购卡地址");
                 return;
             }
+            if (version.isEmpty() || !version.matches("[0-9.]+") || !version.matches(".*\\d.*")) {
+                etVersion.setError("请输入版本号（仅数字和 .）");
+                return;
+            }
 
             selectedAppId = "1";
             selectedContact = contact;
             selectedCardUrl = cardUrl;
+            selectedVersion = version;
             configTitle1 = etTitle1.getText().toString().trim();
             configTitle2 = etTitle2.getText().toString().trim();
             configTitle3 = etTitle3.getText().toString().trim();
@@ -924,6 +942,7 @@ public class DexInjectActivity extends AppCompatActivity {
             tvConfigStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));
             btnInject.setEnabled(true);
             appendLog("配置完成 - APP ID: 1 (固定), 联系方式: " + contact + ", 购卡地址: " + cardUrl
+                    + ", 版本号: " + version
                     + ", 标题1: " + configTitle1 + ", 标题2: " + configTitle2
                     + ", 标题3: " + configTitle3 + ", 标题4: " + configTitle4);
             dialog.dismiss();
@@ -954,7 +973,7 @@ public class DexInjectActivity extends AppCompatActivity {
 
     private void startInjection() {
         new InjectionTask().execute(selectedActivity, selectedAppId, selectedContact, selectedCardUrl,
-                configTitle1, configTitle2, configTitle3, configTitle4);
+                configTitle1, configTitle2, configTitle3, configTitle4, selectedVersion);
     }
 
     // ── 混淆检测 ──
@@ -2019,6 +2038,7 @@ public class DexInjectActivity extends AppCompatActivity {
             String title2 = params[5];
             String title3 = params[6];
             String title4 = params[7];
+            String version = params[8];
 
             publishProgress("正在清空工作目录...");
             cleanWorkDir();
@@ -2063,6 +2083,7 @@ public class DexInjectActivity extends AppCompatActivity {
                 final File finalTempDir = tempDir;
                 final String fContact = contact, fCardUrl = cardUrl;
                 final String fTitle1 = title1, fTitle2 = title2, fTitle3 = title3, fTitle4 = title4;
+                final String fVersion = version;
                 ExecutorService executor = Executors.newFixedThreadPool(2);
 
                 // 线程A: 只提取DEX文件 (不解压整个APK)
@@ -2077,7 +2098,7 @@ public class DexInjectActivity extends AppCompatActivity {
                 // 线程B: 修改xiao.dex (独立于APK)
                 Future<File> xiaoDexFuture = executor.submit(() -> {
                     publishProgress("正在修改classes.dex文件...");
-                    return modifyXiaoDexWithDexlib2(fContact, fCardUrl, fTitle1, fTitle2, fTitle3, fTitle4);
+                    return modifyXiaoDexWithDexlib2(fContact, fCardUrl, fTitle1, fTitle2, fTitle3, fTitle4, fVersion);
                 });
 
                 // 等待两个线程完成
@@ -2177,7 +2198,7 @@ public class DexInjectActivity extends AppCompatActivity {
         appendLog("文件复制完成: " + source.getName() + " -> " + dest.getName());
     }
 
-    private File modifyXiaoDexWithDexlib2(String contact, String cardUrl, String title1, String title2, String title3, String title4) {
+    private File modifyXiaoDexWithDexlib2(String contact, String cardUrl, String title1, String title2, String title3, String title4, String version) {
         try {
             InputStream is = getAssets().open("xiao.dex");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -2229,6 +2250,22 @@ public class DexInjectActivity extends AppCompatActivity {
                         appendLog("对话框工具类修改完成（替换 " + replacedCount + " 处）");
                     } else {
                         appendLog("对话框工具类修改失败：未匹配到可替换的字符串");
+                    }
+                } else if (className.equals("Lcom/example/myapplication/AppConstants;")) {
+                    appendLog("修改应用常量类(版本号)...");
+                    if (version != null && !version.isEmpty()) {
+                        ClassDef next = modifyStringInClass(classDef, "-1", version);
+                        if (next != null) {
+                            modifiedClasses.add(next);
+                            modified = true;
+                            appendLog("版本号替换成功: -1 -> " + version);
+                        } else {
+                            modifiedClasses.add(classDef);
+                            appendLog("警告: 未匹配到版本号占位符: -1");
+                        }
+                    } else {
+                        modifiedClasses.add(classDef);
+                        appendLog("未填写版本号，跳过版本号替换");
                     }
                 } else {
                     modifiedClasses.add(classDef);
