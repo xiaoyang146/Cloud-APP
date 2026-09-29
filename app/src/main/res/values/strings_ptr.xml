@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ptr_tip_pull">下拉刷新</string>
+    <string name="ptr_tip_release">松手刷新</string>
+    <string name="ptr_tip_refreshing">正在加载</string>
+</resources>
