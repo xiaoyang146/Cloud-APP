@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 版本信息区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_version_info"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tvCurrentVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="当前版本: 1.0.0"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#2196F3" />
+
+        <!-- 最新版本信息 - 可点击 -->
+        <TextView
+            android:id="@+id/tvLatestVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="最新版本：点击更新"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#2196F3" />
+
+    </LinearLayout>
+
+    <!-- 更新日志标题 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="更新日志"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 更新日志内容区域 - 隐藏滚动条 -->
+    <ScrollView
+        android:id="@+id/svUpdateLogContent"
+        android:layout_width="match_parent"
+        android:layout_height="340dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/bg_white"
+        android:scrollbars="none">
+
+        <!-- 版本卡片容器：每个版本渲染为一张卡片 -->
+        <LinearLayout
+            android:id="@+id/llUpdateLogContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="2dp">
+
+            <!-- 纯文本/加载中/错误提示，结构化渲染时自动隐藏 -->
+            <TextView
+                android:id="@+id/tvUpdateLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="正在加载更新日志..."
+                android:textSize="14sp"
+                android:lineSpacingExtra="4dp"
+                android:padding="8dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- 空状态布局 - 无更新日志时显示 -->
+    <LinearLayout
+        android:id="@+id/llEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp"
+        android:background="@color/bg_white">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_update"
+            android:alpha="0.25"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="暂无更新" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="暂无更新日志"
+            android:textSize="16sp"
+            android:textColor="@color/text_gray_500"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="还没有发布任何更新内容"
+            android:textSize="13sp"
+            android:textColor="@color/text_gray_400" />
+
+    </LinearLayout>
+
+    <!-- 关闭按钮 -->
+    <Button
+        android:id="@+id/btn_close"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/btn_primary_background"
+        android:text="关闭"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
+
+</LinearLayout>
