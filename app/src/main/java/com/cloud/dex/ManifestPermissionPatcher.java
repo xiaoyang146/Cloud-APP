@@ -90,7 +90,7 @@ public final class ManifestPermissionPatcher {
         Set<String> out = new HashSet<>();
         try {
             Axml axml = Axml.parse(data);
-            for (Axml.Element el : axml.elements) {
+            for (Element el : axml.elements) {
                 if ("uses-permission".equals(el.name) || "uses-permission-sdk-23".equals(el.name)) {
                     String v = el.attrString(axml.strings, "name");
                     if (v != null) out.add(v);
@@ -117,7 +117,7 @@ public final class ManifestPermissionPatcher {
 
             // 已有权限（避免重复插入）
             Set<String> existing = new HashSet<>();
-            for (Axml.Element el : axml.elements) {
+            for (Element el : axml.elements) {
                 if ("uses-permission".equals(el.name)) {
                     String v = el.attrString(axml.strings, "name");
                     if (v != null) existing.add(v);
@@ -142,7 +142,7 @@ public final class ManifestPermissionPatcher {
             List<byte[]> newNodes = new ArrayList<>();
             for (String perm : toAdd) {
                 int permIdx = axml.strings.ensure(perm);
-                newNodes.add(Axml.buildUsesPermission(nsAndroidIdx, nameIdx, tagIdx, permIdx));
+                newNodes.add(buildUsesPermission(nsAndroidIdx, nameIdx, tagIdx, permIdx));
             }
 
             // 重建字符串池并按偏移映射重写所有引用
@@ -162,8 +162,8 @@ public final class ManifestPermissionPatcher {
 
             // 3) 其余 chunk：字符串引用索引 <池扩容起点 的不变，>= 的需 +delta
             int shiftThreshold = axml.strings.originalCount;
-            for (Axml.Node node : axml.nodes) {
-                if (node instanceof Axml.PoolNode) continue;
+            for (Node node : axml.nodes) {
+                if (node instanceof PoolNode) continue;
                 if (node == axml.firstInsertBeforeNode) {
                     for (byte[] nb : newNodes) out.write(nb, 0, nb.length);
                 }
