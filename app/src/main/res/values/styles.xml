@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/input_box_stroke</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+    </style>
+
+
+    <!-- TextInputLayout 自定义样式 -->
+    <style name="CustomSpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:layout_height">60dp</item>
+        <item name="android:minHeight">60dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:background">@drawable/spinner_background</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:textSize">16sp</item>
+        <!-- 下拉菜单设置 -->
+        <item name="android:dropDownHeight">40dp</item>
+        <item name="android:dropDownWidth">match_parent</item>
+        <item name="android:dropDownVerticalOffset">2dp</item>
+        <item name="android:popupBackground">@drawable/spinner_dropdown_background</item>
+    </style>
+
+    <style name="CustomTextInputLayoutStyle"></style>
+</resources>

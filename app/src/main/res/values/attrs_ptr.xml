@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PtrFrameLayout 的自定义属性（与美团众包 ptr 框架同名） -->
+<resources>
+    <declare-styleable name="PtrFrameLayout">
+        <!-- 下拉阻尼系数：位移 = 手指距离 / resistance -->
+        <attr name="ptr_resistance" format="float" />
+        <!-- 触发刷新的阈值：headerHeight * ratio -->
+        <attr name="ptr_ratio_of_header_height_to_refresh" format="float" />
+        <!-- 未达阈值时回弹时长（毫秒） -->
+        <attr name="ptr_duration_to_close" format="integer" />
+        <!-- 刷新完成后头部收起时长（毫秒） -->
+        <attr name="ptr_duration_to_close_header" format="integer" />
+        <!-- 刷新中头部是否保持铺开 -->
+        <attr name="ptr_keep_header_when_refresh" format="boolean" />
+        <!-- 是否松手即刷新（false 表示按下拉比例判定） -->
+        <attr name="ptr_pull_to_fresh" format="boolean" />
+    </declare-styleable>
+</resources>

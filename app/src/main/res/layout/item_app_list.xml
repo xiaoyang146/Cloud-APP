@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginBottom="0dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/card_bg"
+    app:strokeColor="@color/stroke_color"
+    app:strokeWidth="0.5dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- 应用名称 -->
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="应用名称"
+            android:textColor="@color/text_color_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnDelete"
+            app:layout_constraintHorizontal_bias="0" />
+
+        <!-- APPID -->
+        <TextView
+            android:id="@+id/tvAppId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="APPID: 0"
+            android:textColor="@color/text_gray_tertiary"
+            android:textSize="13sp"
+            app:layout_constraintStart_toStartOf="@id/tvAppName"
+            app:layout_constraintTop_toBottomOf="@id/tvAppName"
+            app:layout_constraintEnd_toStartOf="@id/btnDelete" />
+
+        <!-- 应用描述 -->
+        <TextView
+            android:id="@+id/tvAppDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="应用描述"
+            android:textColor="@color/text_gray_500"
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_constraintStart_toStartOf="@id/tvAppName"
+            app:layout_constraintTop_toBottomOf="@id/tvAppId"
+            app:layout_constraintEnd_toStartOf="@id/btnDelete" />
+
+        <!-- 创建时间 -->
+        <TextView
+            android:id="@+id/tvCreateTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="创建时间"
+            android:textColor="@color/text_gray_400"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@id/tvAppName"
+            app:layout_constraintTop_toBottomOf="@id/tvAppDesc"
+            app:layout_constraintEnd_toStartOf="@id/btnDelete" />
+
+        <!-- 编辑按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEdit"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:paddingHorizontal="8dp"
+            android:text="编辑"
+            android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
+            app:icon="@android:drawable/ic_menu_edit"
+            app:iconSize="18dp"
+            app:iconTint="@color/colorPrimary"
+            app:iconPadding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btnDelete"
+            app:rippleColor="#22FF5252" />
+
+        <!-- 删除按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDelete"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:paddingHorizontal="8dp"
+            android:text="删除"
+            android:textColor="#FF5252"
+            android:textSize="13sp"
+            app:icon="@android:drawable/ic_menu_delete"
+            app:iconSize="18dp"
+            app:iconTint="#FF5252"
+            app:iconPadding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnEdit"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:rippleColor="#22FF5252" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

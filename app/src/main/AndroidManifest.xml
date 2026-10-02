@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- 基础网络权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 存储权限 - 适配不同Android版本 -->
+    <!-- Android 13+ 媒体权限 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <!-- 保留，适配Android 11+ -->
+    <queries>
+        <package android:name="com.tencent.mobileqq" />
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+    <!-- Android 12及以下存储权限 -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" />
+    <!-- 安装应用权限 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- 卸载应用权限 -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+
+    <application
+        android:name=".MyApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Cloud-云管理"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyApp"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31"
+        tools:ignore="GoogleAppIndexingWarning">
+
+        <!-- FileProvider for APK installation -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- 主活动 -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MyApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 其他活动 -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApp.NoActionBar" />
+
+        <activity
+            android:name=".AppListActivity"
+            android:label="应用管理"
+            android:theme="@style/Theme.MyApp" />
+
+        <activity
+            android:name=".NoticeManagementActivity"
+            android:label="公告管理"
+            android:theme="@style/Theme.MyApp" />
+
+        <activity
+            android:name=".KamiManagementActivity"
+            android:label="卡密管理"
+            android:theme="@style/Theme.MyApp" />
+
+        <activity
+            android:name=".RegisterActivity"
+            android:label="注册账号"
+            android:theme="@style/Theme.MyApp" />
+
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:label="找回密码"
+            android:theme="@style/Theme.MyApp" />
+
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:label="重置密码"
+            android:theme="@style/Theme.MyApp" />
+        <activity
+            android:name=".MembershipActivity"
+            android:label="开通会员"
+            android:theme="@style/Theme.MyApp" />
+        <activity
+            android:name=".DevelopmentDocActivity"
+            android:label="开发文档"
+            android:theme="@style/Theme.MyApp">
+        </activity>
+
+        <activity
+            android:name=".UserStatisticsActivity"
+            android:label="用户统计"
+            android:theme="@style/Theme.MyApp"/>
+        <activity
+            android:name=".AboutCloudActivity"
+            android:label="关于Cloud"
+            android:theme="@style/Theme.MyApp">
+        </activity>
+        <activity
+            android:name=".PluginUpdateActivity"
+            android:label="插件更新"
+            android:theme="@style/Theme.MyApp">
+        </activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:label="我的"
+            android:theme="@style/Theme.MyApp">
+        </activity>
+        <activity
+            android:name=".DexInjectActivity"
+            android:label="DEX注入"
+            android:theme="@style/Theme.MyApp">
+        </activity>
+    </application>
+
+</manifest>
