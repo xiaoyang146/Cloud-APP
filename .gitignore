@@ -1,0 +1,39 @@
+# Android
+build/
+out/
+*.apk
+*.aab
+*.jar
+
+# Gradle
+.gradle/
+build/
+!gradle-wrapper.jar
+
+# IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.factorypath
+.settings/
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local configuration
+local.properties
+proguard-local.pro
+.oss-rules/
+.signing.properties
+.key.properties
+
+# Native libs
+src/main/jniLibs/
+src/main/cpp/
