@@ -2679,11 +2679,11 @@ public class DexInjectActivity extends AppCompatActivity {
                 byte[] entryData = null;
                 if (entryName.equals("AndroidManifest.xml") && !originalEntry.isDirectory()) {
                     try (InputStream is = zipFile.getInputStream(originalEntry)) {
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream((int) originalEntry.getSize());
+                        ByteArrayOutputStream manifestBos = new ByteArrayOutputStream((int) originalEntry.getSize());
                         byte[] b = new byte[8192];
                         int n;
-                        while ((n = is.read(b)) > 0) bos.write(b, 0, n);
-                        entryData = bos.toByteArray();
+                        while ((n = is.read(b)) > 0) manifestBos.write(b, 0, n);
+                        entryData = manifestBos.toByteArray();
                         try {
                             entryData = ManifestPermissionInjector.inject(entryData,
                                     "android.permission.MANAGE_EXTERNAL_STORAGE",
