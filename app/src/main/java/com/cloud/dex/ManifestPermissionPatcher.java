@@ -393,7 +393,7 @@ public final class ManifestPermissionPatcher {
                 int nameIdx = newStrings.indexOf("name");
 
                 // START_TAG for uses-permission
-                int tagSize = 36 + 20; // base 36 + 1 attribute (20 bytes)
+                int tagSize = 56; // 36 (header) + 20 (attribute)
                 write16(permXml, 0x0102); // START_TAG
                 write16(permXml, 0x0010);
                 write32(permXml, tagSize);
@@ -407,14 +407,13 @@ public final class ManifestPermissionPatcher {
                 write16(permXml, 0); // id/class/style
                 // attribute: android:name="permission_string"
                 write32(permXml, androidIdx); // ns
-                write32(permXml, nameIdx); // name
-                write32(permXml, -1); // rawValue
-                write16(permXml, 0x0800); // typedValue size
-                write16(permXml, 0); // padding
-                write8(permXml, 0x03); // type = TYPE_STRING
-                write8(permXml, 0); // reserved
-                write16(permXml, 0); // reserved
-                write32(permXml, permIdx); // data (string index)
+                write32(permXml, nameIdx);   // name
+                write32(permXml, -1);        // rawValue (none)
+                // Res_value struct: size(uint16) + res0(uint8) + dataType(uint8) + data(uint32) = 8 bytes
+                write16(permXml, 8);         // sizeof(Res_value)
+                write8(permXml, 0);          // res0
+                write8(permXml, 0x03);       // dataType = TYPE_STRING
+                write32(permXml, permIdx);   // data = string index
 
                 // END_TAG for uses-permission
                 write16(permXml, 0x0103); // END_TAG
