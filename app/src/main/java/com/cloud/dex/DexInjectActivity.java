@@ -2674,8 +2674,35 @@ public class DexInjectActivity extends AppCompatActivity {
                 } else {
                     newEntry.setMethod(ZipEntry.DEFLATED);
                 }
+
+                // ★★★ 自动向目标 APK 的 AndroidManifest.xml 注入存储权限 ★★★
+                byte[] entryData = null;
+                if (entryName.equals("AndroidManifest.xml") && !originalEntry.isDirectory()) {
+                    try (InputStream is = zipFile.getInputStream(originalEntry)) {
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream((int) originalEntry.getSize());
+                        byte[] b = new byte[8192];
+                        int n;
+                        while ((n = is.read(b)) > 0) bos.write(b, 0, n);
+                        entryData = bos.toByteArray();
+                        try {
+                            entryData = ManifestPermissionInjector.inject(entryData,
+                                    "android.permission.MANAGE_EXTERNAL_STORAGE",
+                                    "android.permission.WRITE_EXTERNAL_STORAGE",
+                                    "android.permission.READ_EXTERNAL_STORAGE");
+                            appendLog("已向AndroidManifest注入存储权限");
+                        } catch (Exception e) {
+                            Log.w(TAG, "Manifest权限注入失败(跳过): " + e.getMessage());
+                        }
+                        newEntry.setMethod(ZipEntry.DEFLATED);
+                    } catch (IOException e) {
+                        Log.w(TAG, "读取Manifest失败(跳过)", e);
+                    }
+                }
+
                 zos.putNextEntry(newEntry);
-                if (!originalEntry.isDirectory()) {
+                if (entryData != null) {
+                    zos.write(entryData);
+                } else if (!originalEntry.isDirectory()) {
                     try (InputStream is = zipFile.getInputStream(originalEntry)) {
                         int len;
                         while ((len = is.read(buffer)) > 0) zos.write(buffer, 0, len);
