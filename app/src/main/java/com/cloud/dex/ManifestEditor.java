@@ -56,10 +56,10 @@ public class ManifestEditor {
             if (type == CHUNK_START_ELEM) {
                 int ns = getIntLE(axml, pos + 16);
                 int name = getIntLE(axml, pos + 20);
+                int attrStart = ((axml[pos + 24] & 0xFF) | ((axml[pos + 25] & 0xFF) << 8)) & 0xFFFF;
                 int attrCount = ((axml[pos + 28] & 0xFF) | ((axml[pos + 29] & 0xFF) << 8)) & 0xFFFF;
-                int attrStart = ((axml[pos + 26] & 0xFF) | ((axml[pos + 27] & 0xFF) << 8)) & 0xFFFF;
                 if (ns == nsIdx && name == elemIdx && attrCount >= 1) {
-                    int val = getIntLE(axml, pos + attrStart + 8); // attribute[0].rawValue
+                    int val = getIntLE(axml, pos + 16 + attrStart + 8); // attribute[0].rawValue
                     if (val >= 0 && val < pool.strings.size()) {
                         perms.add(pool.strings.get(val));
                     }
@@ -283,8 +283,8 @@ public class ManifestEditor {
         out.putInt(0);            // line
         out.putInt(0xFFFFFFFF);   // comment
         out.putInt(ns); out.putInt(el);
+        out.putShort((short) 20);     // attributeStart (offset from attrExt)
         out.putShort((short) 20);     // attributeSize
-        out.putShort((short) 36);     // attributeStart (offset from chunk start to attr data)
         out.putShort((short) 1);      // attributeCount
         out.putShort((short) 0xFFFF); // idIndex
         out.putShort((short) 0xFFFF); // classIndex
