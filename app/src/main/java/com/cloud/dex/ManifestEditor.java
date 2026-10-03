@@ -4,6 +4,8 @@ import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,9 +56,10 @@ public class ManifestEditor {
             if (type == CHUNK_START_ELEM) {
                 int ns = getIntLE(axml, pos + 16);
                 int name = getIntLE(axml, pos + 20);
-                int ac = getIntLE(axml, pos + 28);
-                if (ns == nsIdx && name == elemIdx && ac >= 1) {
-                    int val = getIntLE(axml, pos + 36 + 8); // attribute[0].rawValue
+                int attrCount = ((axml[pos + 28] & 0xFF) | ((axml[pos + 29] & 0xFF) << 8)) & 0xFFFF;
+                int attrStart = ((axml[pos + 26] & 0xFF) | ((axml[pos + 27] & 0xFF) << 8)) & 0xFFFF;
+                if (ns == nsIdx && name == elemIdx && attrCount >= 1) {
+                    int val = getIntLE(axml, pos + attrStart + 8); // attribute[0].rawValue
                     if (val >= 0 && val < pool.strings.size()) {
                         perms.add(pool.strings.get(val));
                     }
@@ -274,21 +277,24 @@ public class ManifestEditor {
     // ── 元素写入 ──
 
     private static void writePerm(ByteBuffer out, int ns, int el, int at, int val) {
-        // START_ELEMENT
+        // START_ELEMENT (header = 36, attr = 20, total = 56)
         out.putInt(CHUNK_START_ELEM);
         out.putInt(START_ELEM_SIZE);
         out.putInt(0);            // line
         out.putInt(0xFFFFFFFF);   // comment
         out.putInt(ns); out.putInt(el);
-        out.putInt(0x00140014);   // flags
-        out.putInt(1);            // attr count
-        out.putInt(0);            // class attr
-        // attribute
+        out.putShort((short) 20);     // attributeSize
+        out.putShort((short) 36);     // attributeStart (offset from chunk start to attr data)
+        out.putShort((short) 1);      // attributeCount
+        out.putShort((short) 0xFFFF); // idIndex
+        out.putShort((short) 0xFFFF); // classIndex
+        out.putShort((short) 0xFFFF); // styleIndex
+        // attribute[0]
         out.putInt(ns); out.putInt(at);
         out.putInt(val);          // rawValue
         out.putInt(ATTR_STRING);
         out.putInt(val);          // data
-        // END_ELEMENT
+        // END_ELEMENT (24 bytes)
         out.putInt(CHUNK_END_ELEM);
         out.putInt(END_ELEM_SIZE);
         out.putInt(0); out.putInt(0xFFFFFFFF);
