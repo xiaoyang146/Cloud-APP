@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/card_bg"
+    android:orientation="vertical">
+
+    <!-- 用户信息区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <!-- 用户头像 -->
+        <ImageView
+            android:id="@+id/ivNavAvatar"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:src="@drawable/ic_default_avatar"
+            android:scaleType="centerCrop"
+            android:contentDescription="用户头像" />
+
+        <!-- 文本信息 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- 用户名 -->
+            <TextView
+                android:id="@+id/tvNavUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- 注册邮箱 -->
+            <TextView
+                android:id="@+id/tvNavEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/text_color_secondary"
+                android:textSize="13sp" />
+
+            <!-- 会员状态标签 -->
+            <TextView
+                android:id="@+id/tvNavMembership"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="#F0F0F0"
+                android:drawableEnd="@drawable/ic_member_level"
+                android:drawablePadding="4dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:textColor="@color/text_color_secondary"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 分割线 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_color" />
+
+</LinearLayout>
