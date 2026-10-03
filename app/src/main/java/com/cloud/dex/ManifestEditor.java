@@ -2,8 +2,6 @@ package com.cloud.dex;
 
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -16,19 +14,13 @@ import java.util.Set;
 /**
  * 目标 APK 的 AndroidManifest.xml 权限检测与自动补齐工具。
  *
- * 直接操作二进制 AXML 格式，无需依赖 aapt 或 apktool。
- * 在注入 xiao.dex 前调用，确保目标 APK 具备所依赖的权限。
- *
- * 核心策略：保留原始 string pool 的编码（UTF-8/UTF-16）不动，
- * 仅追加新的权限字符串到池末尾，并在 XML 树中插入对应元素。
+ * 直接操作二进制 AXML，保留原始 String Pool 编码不动，
+ * 仅在末尾追加新字符串，并插入 uses-permission 元素。
  */
 public class ManifestEditor {
 
     private static final String TAG = "ManifestEditor";
 
-    // ──────────────────────────────────────────────
-    //  xiao.dex 运行时依赖的权限
-    // ──────────────────────────────────────────────
     public static final String[] REQUIRED_PERMISSIONS = {
             "android.permission.INTERNET",
             "android.permission.ACCESS_NETWORK_STATE",
@@ -38,43 +30,35 @@ public class ManifestEditor {
     };
 
     // ── AXML chunk type ──
-    private static final int AXML_MAGIC         = 0x00080003;
-    private static final int CHUNK_STRING_POOL  = 0x001C0001;
-    private static final int CHUNK_START_NS     = 0x00100100;
-    private static final int CHUNK_END_NS       = 0x00100101;
-    private static final int CHUNK_START_ELEM   = 0x00100102;
-    private static final int CHUNK_END_ELEM     = 0x00100103;
+    private static final int AXML_MAGIC        = 0x00080003;
+    private static final int CHUNK_STRING_POOL = 0x001C0001;
+    private static final int CHUNK_START_ELEM  = 0x00100102;
+    private static final int CHUNK_END_ELEM    = 0x00100103;
 
-    private static final int ATTR_TYPE_STRING   = 0x03000008;
+    // ── 公开 API ──
 
-    // ──────────────────────────────────────────────
-    //  公开入口
-    // ──────────────────────────────────────────────
-
-    /** 解析目标 APK 的 AndroidManifest.xml 中已声明的权限。 */
+    /** 解析已声明的权限 */
     public static Set<String> getExistingPermissions(byte[] axml) {
         Set<String> perms = new HashSet<>();
-        PoolInfo poolInfo = parsePool(axml);
-        if (poolInfo == null) return perms;
+        PoolInfo pool = parsePool(axml);
+        if (pool == null) return perms;
 
-        int pos = 8 + poolInfo.chunkSize; // 跳过 header + string pool
-        int androidNsIdx = poolInfo.strings.indexOf("http://schemas.android.com/apk/res/android");
-        int usesPermIdx  = poolInfo.strings.indexOf("uses-permission");
-        int nameIdx      = poolInfo.strings.indexOf("name");
+        int pos = 8 + pool.chunkSize;
+        int nsIdx = pool.strings.indexOf("http://schemas.android.com/apk/res/android");
+        int elemIdx = pool.strings.indexOf("uses-permission");
 
         while (pos + 8 <= axml.length) {
             int type = getIntLE(axml, pos);
             int size = getIntLE(axml, pos + 4);
             if (size < 8) break;
-
             if (type == CHUNK_START_ELEM) {
-                int ns   = getIntLE(axml, pos + 16);
+                int ns = getIntLE(axml, pos + 16);
                 int name = getIntLE(axml, pos + 20);
-                int attrs = getIntLE(axml, pos + 28);
-                if (ns == androidNsIdx && name == usesPermIdx && attrs >= 1) {
-                    int attrVal = getIntLE(axml, pos + 36 + 8); // attribute[0].rawValue at offset 36+8
-                    if (attrVal >= 0 && attrVal < poolInfo.strings.size()) {
-                        perms.add(poolInfo.strings.get(attrVal));
+                int ac = getIntLE(axml, pos + 28);
+                if (ns == nsIdx && name == elemIdx && ac >= 1) {
+                    int val = getIntLE(axml, pos + 36 + 8); // attribute[0].rawValue
+                    if (val >= 0 && val < pool.strings.size()) {
+                        perms.add(pool.strings.get(val));
                     }
                 }
             }
@@ -83,354 +67,281 @@ public class ManifestEditor {
         return perms;
     }
 
-    /**
-     * 检测并补齐缺失的权限。
-     * @return 补齐后字节；若无需修改则返回原数组。
-     */
+    /** 补齐缺失权限。无需修改返回原数组，否则返回新数组。 */
     public static byte[] ensurePermissions(byte[] axml) {
         Set<String> existing = getExistingPermissions(axml);
         Set<String> missing = new HashSet<>(Arrays.asList(REQUIRED_PERMISSIONS));
         missing.removeAll(existing);
-
-        if (missing.isEmpty()) {
-            Log.d(TAG, "权限已齐全，无需补齐");
-            return axml;
-        }
-        Log.i(TAG, "缺失权限: " + missing + "，开始自动补齐");
+        if (missing.isEmpty()) return axml;
+        Log.i(TAG, "缺失权限: " + missing + "，自动补齐");
         return addPermissions(axml, missing);
     }
 
-    // ──────────────────────────────────────────────
-    //  String Pool 解析（不破坏原始编码）
-    // ──────────────────────────────────────────────
+    // ── String Pool ──
 
     static class PoolInfo {
-        int chunkStart;         // pool chunk 在 axml 中的起始偏移
-        int chunkSize;          // 原始 chunk 总大小
-        int strCount;           // 原始字符串数
-        int flags;              // 编码标志：0=UTF-16, 0x100=UTF-8
-        int stringsStart;       // 字符串数据相对 chunk start 的偏移
-        int stylesStart;        // 样式数据相对 chunk start 的偏移
-        List<String> strings;   // 解码后的字符串列表（按索引）
-        // 原始字符串在 chunk 内的字节偏移（相对 stringsStart）
+        int chunkStart;
+        int chunkSize;
+        int strCount;
+        int flags;
+        int stringsStart;
+        int stylesStart;
+        List<String> strings;
         int[] rawOffsets;
-        // 原始字符串编码后的字节长度（含长度前缀 + 数据 + NULL终止符）
         int[] rawByteLengths;
     }
 
     private static PoolInfo parsePool(byte[] axml) {
         if (axml.length < 36) return null;
         if (getIntLE(axml, 0) != AXML_MAGIC) return null;
-
         int pos = 8;
-        int type = getIntLE(axml, pos);
-        if (type != CHUNK_STRING_POOL) return null;
+        if (getIntLE(axml, pos) != CHUNK_STRING_POOL) return null;
 
-        PoolInfo info = new PoolInfo();
-        info.chunkStart = pos;
-        info.chunkSize  = getIntLE(axml, pos + 4);
-        info.strCount   = getIntLE(axml, pos + 8);
-        int styleCount  = getIntLE(axml, pos + 12);
-        info.flags      = getIntLE(axml, pos + 16);
-        info.stringsStart = getIntLE(axml, pos + 20);
-        info.stylesStart  = getIntLE(axml, pos + 24);
+        PoolInfo p = new PoolInfo();
+        p.chunkStart   = pos;
+        p.chunkSize    = getIntLE(axml, pos + 4);
+        p.strCount     = getIntLE(axml, pos + 8);
+        int styleCount = getIntLE(axml, pos + 12);
+        p.flags        = getIntLE(axml, pos + 16);
+        p.stringsStart = getIntLE(axml, pos + 20);
+        p.stylesStart  = getIntLE(axml, pos + 24);
 
-        boolean isUtf8 = (info.flags & 0x100) != 0;
-        info.strings = new ArrayList<>(info.strCount);
-        info.rawOffsets = new int[info.strCount];
-        info.rawByteLengths = new int[info.strCount];
+        boolean isUtf8 = (p.flags & 0x100) != 0;
+        p.strings = new ArrayList<>(p.strCount);
+        p.rawOffsets = new int[p.strCount];
+        p.rawByteLengths = new int[p.strCount];
 
-        int offsetsBase = pos + 28;
-        int dataBase = pos + info.stringsStart;
+        int offBase = pos + 28;
+        int dataBase = pos + p.stringsStart;
 
-        for (int i = 0; i < info.strCount; i++) {
-            int offset = getIntLE(axml, offsetsBase + i * 4);
-            info.rawOffsets[i] = offset;
-            int strPos = dataBase + offset;
+        for (int i = 0; i < p.strCount; i++) {
+            int off = getIntLE(axml, offBase + i * 4);
+            p.rawOffsets[i] = off;
+            int dp = dataBase + off;
 
             if (isUtf8) {
-                // UTF-8: [1-2 byte len] [UTF-8 data] [0x00]
-                int b0 = axml[strPos] & 0xFF;
-                int skip;
-                int byteLen;
+                int b0 = axml[dp] & 0xFF;
+                int skip, byteLen;
                 if ((b0 & 0x80) != 0) {
-                    int b1 = axml[strPos + 1] & 0xFF;
-                    byteLen = ((b0 & 0x7F) << 8) | b1;
+                    byteLen = ((b0 & 0x7F) << 8) | (axml[dp + 1] & 0xFF);
                     skip = 2;
                 } else {
                     byteLen = b0;
                     skip = 1;
                 }
-                String s = new String(axml, strPos + skip, byteLen, StandardCharsets.UTF_8);
-                info.strings.add(s);
-                info.rawByteLengths[i] = skip + byteLen + 1; // len prefix + data + NUL
+                p.strings.add(new String(axml, dp + skip, byteLen, StandardCharsets.UTF_8));
+                p.rawByteLengths[i] = skip + byteLen + 1;
             } else {
-                // UTF-16: [2 byte charCount] [UTF-16LE data] [0x00 0x00]
-                int charLen = ((axml[strPos + 1] & 0xFF) << 8) | (axml[strPos] & 0xFF);
-                String s = new String(axml, strPos + 2, charLen * 2, StandardCharsets.UTF_16LE);
-                info.strings.add(s);
-                info.rawByteLengths[i] = 2 + charLen * 2 + 2; // charCount + data + NUL(2)
+                int cl = ((axml[dp + 1] & 0xFF) << 8) | (axml[dp] & 0xFF);
+                p.strings.add(new String(axml, dp + 2, cl * 2, StandardCharsets.UTF_16LE));
+                p.rawByteLengths[i] = 2 + cl * 2 + 2;
             }
         }
-
-        return info;
+        return p;
     }
 
-    // ──────────────────────────────────────────────
-    //  权限补齐核心
-    // ──────────────────────────────────────────────
+    // ── 核心：追加权限 ──
+
+    // START_ELEMENT(36) + 1 attr(20) = 56, END_ELEMENT = 24
+    private static final int START_ELEM_SIZE = 56;
+    private static final int END_ELEM_SIZE   = 24;
+    private static final int ATTR_STRING     = 0x03000008;
 
     private static byte[] addPermissions(byte[] axml, Set<String> permissions) {
-        // 1. 解析原始 string pool
         PoolInfo pool = parsePool(axml);
-        if (pool == null) throw new RuntimeException("无法解析 AXML string pool");
+        if (pool == null) throw new RuntimeException("无法解析 String Pool");
 
-        // 2. 找出需要加入的新权限字符串
-        List<String> newPermStrings = new ArrayList<>();
+        // 1. 收集需要加入 pool 的新字符串
+        List<String> newStrs = new ArrayList<>();
         for (String p : permissions) {
-            if (!pool.strings.contains(p)) {
-                newPermStrings.add(p);
-            }
+            if (!pool.strings.contains(p)) newStrs.add(p);
         }
+        ensureInPool(pool, newStrs, "http://schemas.android.com/apk/res/android");
+        ensureInPool(pool, newStrs, "uses-permission");
+        ensureInPool(pool, newStrs, "name");
 
-        // 3. 确保 uses-permission, name, android namespace 也在池中
-        //    （正常情况下它们已经存在，这里做防御）
-        ensureInPool(pool, newPermStrings, "http://schemas.android.com/apk/res/android");
-        ensureInPool(pool, newPermStrings, "uses-permission");
-        ensureInPool(pool, newPermStrings, "name");
-
-        // 4. 编码新字符串（与原始编码一致）
+        // 2. 编码新字符串
         boolean isUtf8 = (pool.flags & 0x100) != 0;
-        List<byte[]> newEncoded = new ArrayList<>();
-        int newDataBytes = 0;
-        for (String s : newPermStrings) {
-            byte[] enc = isUtf8 ? encodeUtf8String(s) : encodeUtf16String(s);
-            newEncoded.add(enc);
-            newDataBytes += enc.length;
+        List<byte[]> newEnc = new ArrayList<>();
+        int newBytes = 0;
+        for (String s : newStrs) {
+            byte[] b = isUtf8 ? encUtf8(s) : encUtf16(s);
+            newEnc.add(b);
+            newBytes += b.length;
         }
 
-        // 5. 找插入点
-        int insertionOffset = findInsertionOffset(axml, pool);
+        int newStrCount = pool.strCount + newStrs.size();
 
-        // 6. 计算新文件大小
-        int newStrCount = pool.strCount + newPermStrings.size();
-        int oldOffsetsSize = pool.strCount * 4;
-        int newOffsetsSize = newStrCount * 4;
-        int offsetsDelta = newOffsetsSize - oldOffsetsSize;
-        int poolDelta = offsetsDelta + newDataBytes;
+        // ★ 关键修复：从实际写入字节计算 pool 大小，而非增量计算
+        int oldDataSize = pool.chunkSize - pool.stringsStart;  // 原始 string data 区
+        int newPoolSize = 28 + newStrCount * 4 + oldDataSize + newBytes;
+        int poolDelta   = newPoolSize - pool.chunkSize;
 
-        int newPoolSize = pool.chunkSize + poolDelta;
-
-        // 新权限元素大小
+        // 3. 找插入点
+        int ins = findInsertionOffset(axml, pool);
         int permsBytes = permissions.size() * (START_ELEM_SIZE + END_ELEM_SIZE);
-        int totalSize = axml.length + poolDelta + permsBytes;
+        int totalSize  = axml.length + poolDelta + permsBytes;
 
-        // 7. 构建输出
         ByteBuffer out = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN);
 
-        // --- 头部 ---
+        // ── 文件头 ──
         out.putInt(AXML_MAGIC);
         out.putInt(totalSize);
 
-        // --- 重写 string pool ---
-        // chunk header
+        // ── 新 String Pool ──
         out.putInt(CHUNK_STRING_POOL);
         out.putInt(newPoolSize);
         out.putInt(newStrCount);
-        out.putInt(0); // styleCount = 0
+        out.putInt(0);                     // styleCount = 0
         out.putInt(pool.flags);
 
-        int newStringsStart = 28 + newStrCount * 4;
-        int newStylesStart = newStringsStart; // no styles
-        out.putInt(newStringsStart);
-        out.putInt(newStylesStart);
+        int stringsStart = 28 + newStrCount * 4;
+        out.putInt(stringsStart);          // 新 stringsStart
+        out.putInt(stringsStart);          // stylesStart = stringsStart
 
-        // offsets: 原始字符串保持原偏移，新字符串追加
+        // 偏移表：原始字符串保持不动，新字符串追加
         for (int i = 0; i < pool.strCount; i++) {
             out.putInt(pool.rawOffsets[i]);
         }
-        int newOffsetCursor = 0;
-        // 计算原始字符串数据总长度作为新字符串的起始偏移
-        for (int i = 0; i < pool.strCount; i++) {
-            newOffsetCursor += pool.rawByteLengths[i];
-        }
-        for (int i = 0; i < newPermStrings.size(); i++) {
-            out.putInt(newOffsetCursor);
-            newOffsetCursor += newEncoded.get(i).length;
+        int cursor = 0;
+        for (int i = 0; i < pool.strCount; i++) cursor += pool.rawByteLengths[i];
+        for (byte[] enc : newEnc) {
+            out.putInt(cursor);
+            cursor += enc.length;
         }
 
-        // string data: 原始数据原封不动复制
-        out.put(axml, pool.chunkStart + pool.stringsStart, pool.chunkSize - pool.stringsStart);
-        // string data: 追加新字符串
-        for (byte[] enc : newEncoded) {
-            out.put(enc);
-        }
+        // 字符串数据：原始→追加
+        out.put(axml, pool.chunkStart + pool.stringsStart, oldDataSize);
+        for (byte[] enc : newEnc) out.put(enc);
 
-        // --- 复制 pool 后到插入点之间的内容 ---
+        // ── pool 后到插入点之间的内容 ──
         int afterPool = pool.chunkStart + pool.chunkSize;
-        int copyLen = insertionOffset - afterPool;
-        if (copyLen > 0) {
-            out.put(axml, afterPool, copyLen);
-        }
+        int midLen = ins - afterPool;
+        if (midLen > 0) out.put(axml, afterPool, midLen);
 
-        // --- 写入新 uses-permission 元素 ---
-        // 查找必要字符串的索引
-        int androidNsIdx = findPoolIndex(pool, newPermStrings, "http://schemas.android.com/apk/res/android");
-        int elemIdx      = findPoolIndex(pool, newPermStrings, "uses-permission");
-        int attrNameIdx  = findPoolIndex(pool, newPermStrings, "name");
-
+        // ── 新 uses-permission 元素 ──
+        int nsIdx   = findIndex(pool, newStrs, "http://schemas.android.com/apk/res/android");
+        int elemIdx = findIndex(pool, newStrs, "uses-permission");
+        int attrIdx = findIndex(pool, newStrs, "name");
         for (String perm : permissions) {
-            int permIdx = findPoolIndex(pool, newPermStrings, perm);
-            writeUsesPermission(out, androidNsIdx, elemIdx, attrNameIdx, permIdx);
+            int pIdx = findIndex(pool, newStrs, perm);
+            writePerm(out, nsIdx, elemIdx, attrIdx, pIdx);
         }
 
-        // --- 复制插入点后的剩余内容 ---
-        int remaining = axml.length - insertionOffset;
-        if (remaining > 0) {
-            out.put(axml, insertionOffset, remaining);
-        }
+        // ── 插入点后剩余内容 ──
+        int tail = axml.length - ins;
+        if (tail > 0) out.put(axml, ins, tail);
 
-        Log.i(TAG, "补齐完成: +" + permissions.size() + " 个权限, AXML " + axml.length + " → " + totalSize + " bytes");
+        Log.i(TAG, "补齐: +" + permissions.size() + "权限, " + axml.length + "→" + totalSize);
         return out.array();
     }
 
-    // ── 插入点查找 ──
+    // ── 插入点 ──
 
-    /**
-     * 找到插入新权限元素的位置。
-     * 优先放在最后一个 uses-permission 之后；如果没有则放在 &lt;application&gt; 之前；
-     * 如果也没有则放在 manifest 结束前。
-     *
-     * 返回的是原始 axml 数组中的字节偏移量。
-     */
     private static int findInsertionOffset(byte[] axml, PoolInfo pool) {
         int pos = 8 + pool.chunkSize;
-        int androidNsIdx = pool.strings.indexOf("http://schemas.android.com/apk/res/android");
-        int usesPermIdx  = pool.strings.indexOf("uses-permission");
-        int applicationIdx = pool.strings.indexOf("application");
+        int nsI = pool.strings.indexOf("http://schemas.android.com/apk/res/android");
+        int permI = pool.strings.indexOf("uses-permission");
+        int appI = pool.strings.indexOf("application");
 
-        int lastPermEnd = -1;
+        int lastEnd = -1;
         int appStart = -1;
-
         while (pos + 8 <= axml.length) {
             int type = getIntLE(axml, pos);
             int size = getIntLE(axml, pos + 4);
             if (size < 8) break;
-
             if (type == CHUNK_START_ELEM) {
-                int ns   = getIntLE(axml, pos + 16);
-                int name = getIntLE(axml, pos + 20);
-
-                if (ns == androidNsIdx && name == usesPermIdx) {
-                    // 定位到 START_ELEMENT 之后，检查紧随的 END_ELEMENT
+                int ns = getIntLE(axml, pos + 16);
+                int nm = getIntLE(axml, pos + 20);
+                if (ns == nsI && nm == permI) {
+                    // 跳过 START + END
                     int endPos = pos + size;
                     int endType = getIntLE(axml, endPos);
                     int endSize = getIntLE(axml, endPos + 4);
-                    if (endType == CHUNK_END_ELEM && endSize >= 8) {
-                        lastPermEnd = endPos + endSize; // 跳过 START + END
-                    } else {
-                        // 防御：至少跳过 START_ELEMENT
-                        lastPermEnd = pos + size;
-                    }
-                } else if (name == applicationIdx) {
+                    lastEnd = (endType == CHUNK_END_ELEM) ? endPos + endSize : pos + size;
+                } else if (nm == appI) {
                     appStart = pos;
                     break;
                 }
             }
             pos += size;
         }
-
-        if (lastPermEnd > 0) return lastPermEnd;
+        if (lastEnd > 0) return lastEnd;
         if (appStart > 0) return appStart;
-        // 兜底：放在 manifest 结束之前
         return axml.length - 24;
-    }
-
-    // ── 编码辅助 ──
-
-    private static byte[] encodeUtf8String(String s) {
-        byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
-        int len = utf8.length;
-        byte[] result;
-        int skip;
-        if (len <= 127) {
-            result = new byte[1 + len + 1];
-            result[0] = (byte) len;
-            skip = 1;
-        } else {
-            result = new byte[2 + len + 1];
-            result[0] = (byte) (((len >> 8) & 0x7F) | 0x80);
-            result[1] = (byte) (len & 0xFF);
-            skip = 2;
-        }
-        System.arraycopy(utf8, 0, result, skip, len);
-        result[skip + len] = 0; // NULL terminator
-        return result;
-    }
-
-    private static byte[] encodeUtf16String(String s) {
-        byte[] utf16 = s.getBytes(StandardCharsets.UTF_16LE);
-        int charLen = utf16.length / 2;
-        byte[] result = new byte[2 + utf16.length + 2]; // 2-byte charCount + data + 2-byte NUL
-        result[0] = (byte) (charLen & 0xFF);
-        result[1] = (byte) ((charLen >> 8) & 0xFF);
-        System.arraycopy(utf16, 0, result, 2, utf16.length);
-        result[result.length - 2] = 0;
-        result[result.length - 1] = 0;
-        return result;
     }
 
     // ── 元素写入 ──
 
-    private static final int START_ELEM_SIZE = 36 + 20;   // 36 header + 20 (1 attr)
-    private static final int END_ELEM_SIZE   = 24;
-
-    private static void writeUsesPermission(ByteBuffer out, int nsIdx, int elemIdx,
-                                             int attrIdx, int permIdx) {
+    private static void writePerm(ByteBuffer out, int ns, int el, int at, int val) {
         // START_ELEMENT
         out.putInt(CHUNK_START_ELEM);
         out.putInt(START_ELEM_SIZE);
-        out.putInt(0);                      // lineNumber
-        out.putInt(0xFFFFFFFF);             // comment
-        out.putInt(nsIdx);                  // namespace URI
-        out.putInt(elemIdx);                // element name "uses-permission"
-        out.putInt(0x00140014);             // flags (ELEMENT_HAS_NS)
-        out.putInt(1);                      // attributeCount
-        out.putInt(0);                      // classAttribute
-
-        // attribute: android:name="permission"
-        out.putInt(nsIdx);                  // attr namespace
-        out.putInt(attrIdx);                // attr name "name"
-        out.putInt(permIdx);                // rawValue (string index)
-        out.putInt(ATTR_TYPE_STRING);       // type
-        out.putInt(permIdx);                // data (string index)
-
+        out.putInt(0);            // line
+        out.putInt(0xFFFFFFFF);   // comment
+        out.putInt(ns); out.putInt(el);
+        out.putInt(0x00140014);   // flags
+        out.putInt(1);            // attr count
+        out.putInt(0);            // class attr
+        // attribute
+        out.putInt(ns); out.putInt(at);
+        out.putInt(val);          // rawValue
+        out.putInt(ATTR_STRING);
+        out.putInt(val);          // data
         // END_ELEMENT
         out.putInt(CHUNK_END_ELEM);
         out.putInt(END_ELEM_SIZE);
-        out.putInt(0);
-        out.putInt(0xFFFFFFFF);
-        out.putInt(nsIdx);
-        out.putInt(elemIdx);
+        out.putInt(0); out.putInt(0xFFFFFFFF);
+        out.putInt(ns); out.putInt(el);
     }
 
-    // ── 工具方法 ──
+    // ── 字符串编码 ──
 
-    private static int getIntLE(byte[] data, int offset) {
-        return ByteBuffer.wrap(data, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
-    }
-
-    private static void ensureInPool(PoolInfo pool, List<String> newStrings, String s) {
-        if (!pool.strings.contains(s) && !newStrings.contains(s)) {
-            newStrings.add(0, s);
+    private static byte[] encUtf8(String s) {
+        byte[] d = s.getBytes(StandardCharsets.UTF_8);
+        int len = d.length;
+        if (len <= 127) {
+            byte[] r = new byte[len + 2];
+            r[0] = (byte) len;
+            System.arraycopy(d, 0, r, 1, len);
+            r[len + 1] = 0;
+            return r;
         }
+        byte[] r = new byte[len + 3];
+        r[0] = (byte) (((len >> 8) & 0x7F) | 0x80);
+        r[1] = (byte) (len & 0xFF);
+        System.arraycopy(d, 0, r, 2, len);
+        r[len + 2] = 0;
+        return r;
     }
 
-    private static int findPoolIndex(PoolInfo pool, List<String> newStrings, String target) {
-        int idx = pool.strings.indexOf(target);
-        if (idx >= 0) return idx;
-        idx = newStrings.indexOf(target);
-        if (idx >= 0) return pool.strCount + idx;
-        throw new RuntimeException("字符串未加入 pool: " + target);
+    private static byte[] encUtf16(String s) {
+        byte[] d = s.getBytes(StandardCharsets.UTF_16LE);
+        int cl = d.length / 2;
+        byte[] r = new byte[d.length + 4];
+        r[0] = (byte) (cl & 0xFF);
+        r[1] = (byte) ((cl >> 8) & 0xFF);
+        System.arraycopy(d, 0, r, 2, d.length);
+        r[r.length - 2] = 0;
+        r[r.length - 1] = 0;
+        return r;
+    }
+
+    // ── 小工具 ──
+
+    private static int getIntLE(byte[] d, int off) {
+        return ByteBuffer.wrap(d, off, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
+    }
+
+    private static void ensureInPool(PoolInfo pool, List<String> ns, String s) {
+        if (!pool.strings.contains(s) && !ns.contains(s)) ns.add(0, s);
+    }
+
+    private static int findIndex(PoolInfo pool, List<String> ns, String t) {
+        int i = pool.strings.indexOf(t);
+        if (i >= 0) return i;
+        i = ns.indexOf(t);
+        if (i >= 0) return pool.strCount + i;
+        throw new RuntimeException("missing: " + t);
     }
 }
