@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/btn_action_user"
+    style="@style/Widget.MaterialComponents.Button.TextButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="0dp"
+    android:paddingHorizontal="12dp"
+    android:text="用户"
+    android:textColor="@color/colorPrimary"
+    android:textSize="14sp"
+    android:textStyle="bold"
+    app:icon="@drawable/ic_user"
+    app:iconTint="@color/colorPrimary"
+    app:iconPadding="6dp"
+    app:rippleColor="@color/colorPrimary" />

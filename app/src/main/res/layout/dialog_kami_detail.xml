@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvKamiCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="卡密代码："
+        android:textSize="14sp"
+        android:textColor="@color/text_color_dark"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvExpireTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="到期时间："
+        android:textSize="14sp"
+        android:textColor="@color/text_color_dark"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="卡密状态："
+        android:textSize="14sp"
+        android:textColor="@color/text_color_dark"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvRemainingDays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="剩余天数："
+        android:textSize="14sp"
+        android:textColor="@color/text_color_dark"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvDeviceId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="设备ID："
+        android:textSize="14sp"
+        android:textColor="@color/text_color_dark"
+        android:visibility="gone" />
+
+    <!-- 关闭按钮 -->
+    <Button
+        android:id="@+id/btn_close"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/btn_primary_background"
+        android:text="关闭"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
+
+</LinearLayout>

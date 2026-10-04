@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_muted">
+
+    <!-- 标题下方灰色分割线 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0" />
+
+    <com.cloud.dex.widget.refresh.PtrFrameLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:ptr_duration_to_close="450"
+        app:ptr_duration_to_close_header="450"
+        app:ptr_keep_header_when_refresh="true"
+        app:ptr_pull_to_fresh="false"
+        app:ptr_ratio_of_header_height_to_refresh="1.2"
+        app:ptr_resistance="1.7">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- 用户信息卡片 -->
+                <LinearLayout
+                    android:id="@+id/layoutUserInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/card_background"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/tvUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="欢迎，用户"
+                        android:textSize="18sp"
+                        android:textColor="@color/text_color_dark"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvUserId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="用户ID: 0"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_color_hint" />
+
+                </LinearLayout>
+
+                <!-- 会员状态卡片 -->
+                <LinearLayout
+                    android:id="@+id/layoutMembershipStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/card_background"
+                    android:padding="16dp"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/tvMembershipTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="会员状态"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color_dark"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/tvCurrentMembership"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="当前会员状态: 免费用户"
+                        android:textSize="14sp"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvStartTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="开始时间: -"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_gray_tertiary"
+                        android:layout_marginBottom="4dp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvExpireTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="到期时间: -"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_gray_tertiary"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <!-- 会员套餐卡片 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/card_background"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="选择会员套餐"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color_dark"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- 基础会员 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/membership_basic_bg"
+                        android:padding="16dp"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="基础会员"
+                            android:textSize="18sp"
+                            android:textColor="#2196F3"
+                            android:textStyle="bold"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:id="@+id/tvBasicPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="¥9.9/月"
+                            android:textSize="20sp"
+                            android:textColor="#E65100"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="✓ 最多50个卡密\n✓ 所有基础功能\n✓ 优先技术支持\n✓ 邮件支持"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_color_hint"
+                            android:layout_marginBottom="12dp" />
+
+                        <Button
+                            android:id="@+id/btnBasic"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="支付宝开通"
+                            android:background="@drawable/button_alipay_bg"
+                            android:textColor="@android:color/white"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                    <!-- 高级会员 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/membership_premium_bg"
+                        android:padding="16dp"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="高级会员"
+                            android:textSize="18sp"
+                            android:textColor="#4CAF50"
+                            android:textStyle="bold"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:id="@+id/tvPremiumPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="¥19.9/月"
+                            android:textSize="20sp"
+                            android:textColor="#E65100"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:text="✓ 最多200个卡密\n✓ 所有高级功能\n✓ 专属技术支持\n✓ 优先功能更新\n✓ 定制化服务"
+                            android:textColor="@color/text_color_hint"
+                            android:textSize="12sp" />
+
+                        <Button
+                            android:id="@+id/btnPremium"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="支付宝开通"
+                            android:background="@drawable/button_alipay_bg"
+                            android:textColor="@android:color/white"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                    <!-- 终身会员 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/membership_lifetime_bg"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="终身会员"
+                            android:textSize="18sp"
+                            android:textColor="#FF9800"
+                            android:textStyle="bold"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:id="@+id/tvLifetimePrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="¥99.9"
+                            android:textSize="20sp"
+                            android:textColor="#E65100"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="✓ 无限制卡密数量\n✓ 所有功能永久使用\n✓ 终身技术支持\n✓ 最高优先级服务\n✓ 定制开发服务"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_color_hint"
+                            android:layout_marginBottom="12dp" />
+
+                        <Button
+                            android:id="@+id/btnLifetime"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="支付宝开通"
+                            android:background="@drawable/button_alipay_bg"
+                            android:textColor="@android:color/white"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- 支付说明 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/bg_warm"
+                    android:padding="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="32dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="支付说明"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_color_dark"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="使用支付宝支付，支付成功后系统将自动开通会员服务\n支付成功后，会员状态将立即更新\n如有问题请联系客服：xiaoyang146@qq.com"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_color_hint"
+                        android:gravity="center"
+                        android:lineSpacingExtra="4dp" />
+
+                    <!-- 新增的联系客服超链接 -->
+                    <TextView
+                        android:id="@+id/tvContactService"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="点击联系客服"
+                        android:textSize="13sp"
+                        android:textColor="#2196F3"
+                        android:gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+    </com.cloud.dex.widget.refresh.PtrFrameLayout>
+
+</LinearLayout>
