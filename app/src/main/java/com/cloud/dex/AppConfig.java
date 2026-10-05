@@ -5,8 +5,8 @@ public final class AppConfig {
     private AppConfig() {}
 
     // ============ Server ============
-    public static final String BASE_URL = "https://ok1666.cn/APPyingyon";
-    public static final String ADMIN_BASE_URL = "https://ok1666.cn/admin";
+    public static final String BASE_URL = "https://ok1666.cn/cloud/APPyingyon";
+    public static final String ADMIN_BASE_URL = "https://ok1666.cn/cloud/admin";
     public static final String TOKEN_REFRESH_URL = BASE_URL + "/token_refresh.php";
 
     // ============ API paths ============
