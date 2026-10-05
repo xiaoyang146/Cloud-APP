@@ -2308,7 +2308,15 @@ public class DexInjectActivity extends AppCompatActivity {
             int len;
             while ((len = is.read(buffer)) > 0) baos.write(buffer, 0, len);
             is.close();
-            byte[] decrypted = DexEncryptUtil.decrypt(baos.toByteArray());
+            // 兼容两种载荷格式：明文 dex（magic "dex"）直接使用；加密载荷（IV+密文）再解密。
+            byte[] rawPayload = baos.toByteArray();
+            byte[] decrypted;
+            if (rawPayload.length >= 4 && rawPayload[0] == 0x64 && rawPayload[1] == 0x65 && rawPayload[2] == 0x78) {
+                decrypted = rawPayload;
+                appendLog("检测到明文 xiao.dex，跳过解密");
+            } else {
+                decrypted = DexEncryptUtil.decrypt(rawPayload);
+            }
             if (decrypted == null) throw new Exception("xiao.dex解密失败");
             File tempDex = new File(workDir, "xiao_modified_" + System.currentTimeMillis() + ".dex");
             try (FileOutputStream fos = new FileOutputStream(tempDex)) {
